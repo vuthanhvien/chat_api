@@ -5,6 +5,10 @@ import { Server } from 'socket.io';
 export class SocketService {
   private io: Server;
 
+  constructor() {
+    console.log('SocketService instance created');
+  }
+
   setServer(io: Server) {
     this.io = io;
   }

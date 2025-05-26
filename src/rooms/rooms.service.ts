@@ -81,12 +81,15 @@ export class RoomService {
   }
 
   async update(id: string, dto: CreateRoomDto) {
-    return this.prisma.room.update({
+    const r = await this.prisma.room.update({
       where: { id },
       data: {
         name: dto.name,
       },
     });
+
+    this.socketService.emitToUsers('room:update', r, [r.ownerId]);
+    return r;
   }
 
   async addUsersToRoom(roomId: string, userIds: string[]) {
@@ -131,6 +134,12 @@ export class RoomService {
       out.push(r);
     });
 
+    // Emit an event to notify users about the new members
+    this.socketService.emitToUsers(
+      'room:user:add',
+      { roomId, userIds: newUserIds },
+      [room.ownerId],
+    );
     return out;
   }
 }

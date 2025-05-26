@@ -7,11 +7,18 @@ import { CommonModule } from './common/common.module';
 import { RoomModule } from './rooms/rooms.module';
 import { MessageModule } from './messages/messages.module';
 import { AppGateway } from './app.gateway';
-import { SocketService } from './socket/socket.service';
+import { SocketModule } from './socket/socket.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, CommonModule, RoomModule, MessageModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    CommonModule,
+    RoomModule,
+    MessageModule,
+    SocketModule,
+  ],
   controllers: [AppController],
-  providers: [AppService, AppGateway, SocketService],
+  providers: [AppService, AppGateway],
 })
 export class AppModule {}
