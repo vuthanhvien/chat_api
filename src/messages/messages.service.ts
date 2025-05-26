@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { SocketService } from 'src/socket/socket.service';
 
 export type CreateMessageDto = {
   content: string;
@@ -10,7 +11,10 @@ export type CreateMessageDto = {
 
 @Injectable()
 export class MessageService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly socketService: SocketService, // Assuming you have a socket service for emitting events
+  ) {}
 
   async create(dto: CreateMessageDto, senderId) {
     const r = await this.prisma.message.create({
@@ -22,8 +26,7 @@ export class MessageService {
         roomId: dto.roomId,
       },
     });
-    console.log('Message created:', r);
-    // Emit an event or perform any additional logic here if needed
+    this.socketService.emitToRoom('message:created', r, dto.roomId);
     return {
       data: r,
       message: 'Message created successfully',

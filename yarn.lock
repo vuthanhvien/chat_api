@@ -757,10 +757,10 @@
   dependencies:
     tslib "2.8.1"
 
-"@nestjs/websockets@^11.1.1":
-  version "11.1.1"
-  resolved "https://registry.yarnpkg.com/@nestjs/websockets/-/websockets-11.1.1.tgz#6f7e2374a79f2b34c76312be7436219f85f58512"
-  integrity sha512-gxwQoGx5bW5IvparzrX1UOGXz87eqY0fK5Y6yb14z6tSSubQTciNjCDm5osDEkRyRCG6ZB0F+eXF6dRUjwTlBQ==
+"@nestjs/websockets@^11.1.2":
+  version "11.1.2"
+  resolved "https://registry.yarnpkg.com/@nestjs/websockets/-/websockets-11.1.2.tgz#d0d6b8ee87013970321820c718d11b26e0176fc9"
+  integrity sha512-Ywl7u0C3+qnKIrk0mD3jHWnowO+GScFT1FeP6cNgarA0ujHEfusph9IIbnUJiEiusfnKVpK9fYMGZRSDwnRGPQ==
   dependencies:
     iterare "1.2.1"
     object-hash "3.0.0"

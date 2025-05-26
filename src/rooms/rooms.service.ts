@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { SocketService } from 'src/socket/socket.service';
 
 export interface CreateRoomDto {
   name: string;
@@ -9,7 +10,10 @@ export interface CreateRoomDto {
 
 @Injectable()
 export class RoomService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly socketService: SocketService, // Assuming you have a socket service for emitting events
+  ) {}
 
   async create(dto: CreateRoomDto, userId: string) {
     if (!dto.name) {
@@ -24,6 +28,15 @@ export class RoomService {
       },
     });
 
+    // send a socket.io when create
+
+    const userRooms = await this.prisma.userRoom.findMany({
+      where: { roomId: room.id },
+      select: { userId: true },
+    });
+    const memberIds = userRooms.map((ur) => ur.userId).concat(userId);
+
+    this.socketService.emitToUsers('room:add', room, memberIds);
     return room;
   }
 

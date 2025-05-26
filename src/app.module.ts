@@ -6,10 +6,12 @@ import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { RoomModule } from './rooms/rooms.module';
 import { MessageModule } from './messages/messages.module';
+import { AppGateway } from './app.gateway';
+import { SocketService } from './socket/socket.service';
 
 @Module({
-  imports: [AuthModule, UsersModule, MessageModule, CommonModule, RoomModule],
+  imports: [AuthModule, UsersModule, CommonModule, RoomModule, MessageModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppGateway, SocketService],
 })
 export class AppModule {}
