@@ -29,22 +29,13 @@ export class RoomService {
 
   async find(query, userId: string) {
     const rooms = await this.prisma.room.findMany({
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        ownerId: true,
-        createdAt: true,
-        userRooms: {
-          select: {
-            userId: true,
-          },
-        },
+      include: {
+        UserRoom: true,
       },
       where: {
         OR: [
           {
-            userRooms: {
+            UserRoom: {
               some: {
                 userId: userId,
               },

@@ -8,11 +8,12 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String     @id @default(uuid())
+  email     String     @unique
   name      String
   password  String
-  createdAt DateTime @default(now())
+  createdAt DateTime   @default(now())
+  UserRoom  UserRoom[]
 }
 
 model Message {
@@ -22,8 +23,7 @@ model Message {
   senderId  String
   createdAt DateTime   @default(now())
   roomId    String
-
-  UserRoom UserRoom[]
+  UserRoom  UserRoom[]
 }
 
 model Room {
@@ -34,18 +34,19 @@ model Room {
   ownerId     String
   createdAt   DateTime @default(now())
   userId      String?
-  userRooms   UserRoom[]
+
+  UserRoom UserRoom[]
 }
 
 model UserRoom {
   id            String    @id @default(uuid())
   userId        String
+  user          User      @relation(fields: [userId], references: [id])
   roomId        String
-  lastmessageId String?
   lastMessage   Message?  @relation(fields: [lastmessageId], references: [id])
+  lastmessageId String?
   lastReadAt    DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-
-  Room Room[]
+  Room          Room      @relation(fields: [roomId], references: [id])
 }
