@@ -18,6 +18,7 @@ model User {
 model Message {
   id        String     @id @default(uuid())
   content   String
+  type      String
   senderId  String
   createdAt DateTime   @default(now())
   roomId    String
