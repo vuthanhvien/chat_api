@@ -9,6 +9,15 @@ import {
 import { Server, Socket } from 'socket.io';
 import { SocketService } from './socket/socket.service';
 
+export enum EmitEvent {
+  JOIN = 'join',
+  LEAVE = 'leave',
+  MESSAGE = 'message',
+  DISCONNECT = 'disconnect',
+  CONNECT = 'connect',
+  ERROR = 'error',
+}
+
 @WebSocketGateway(4000)
 export class AppGateway implements OnGatewayInit {
   @WebSocketServer()
@@ -27,8 +36,6 @@ export class AppGateway implements OnGatewayInit {
     @ConnectedSocket() client: Socket,
   ) {
     client.join(roomId);
-    console.log(`Socket ${client.id} joined room ${roomId}`);
-    client.emit('joined', roomId);
   }
 
   @SubscribeMessage('leave')
@@ -37,34 +44,14 @@ export class AppGateway implements OnGatewayInit {
     @ConnectedSocket() client: Socket,
   ) {
     client.leave(roomId);
-    console.log(`Socket ${client.id} left room ${roomId}`);
-    client.emit('left', roomId);
   }
 
-  @SubscribeMessage('message')
-  handleMessage(
-    @MessageBody() message: { roomId: string; content: string },
-    @ConnectedSocket() client: Socket,
-  ) {
-    console.log(`Received message from ${client.id}:`, message);
-    this.socketService.emitToRoom('message', message, message.roomId);
-  }
-  @SubscribeMessage('disconnect')
-  handleDisconnect(@ConnectedSocket() client: Socket) {
-    console.log(`Socket ${client.id} disconnected`);
-    // Handle any cleanup or notifications here if needed
-  }
-  @SubscribeMessage('connect')
-  handleConnect(@ConnectedSocket() client: Socket) {
-    console.log(`Socket ${client.id} connected`);
-    // Handle any initialization or notifications here if needed
-  }
-  @SubscribeMessage('error')
-  handleError(
-    @MessageBody() error: { message: string },
-    @ConnectedSocket() client: Socket,
-  ) {
-    console.error(`Error from socket ${client.id}:`, error.message);
-    client.emit('error', { message: 'An error occurred' });
-  }
+  // @SubscribeMessage('message')
+  // handleMessage(
+  //   @MessageBody() message: { roomId: string; content: string },
+  //   @ConnectedSocket() client: Socket,
+  // ) {
+  //   console.log(`Received message from ${client.id}:`, message);
+  //   this.socketService.emitToRoom('message', message, message.roomId);
+  // }
 }
