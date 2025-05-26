@@ -27,20 +27,8 @@ export class RoomService {
     return room;
   }
 
-  async find(
-    {
-      page = 1,
-      pageSize = 10,
-    }: {
-      page?: number;
-      pageSize?: number;
-    },
-    userId: string,
-  ) {
-    const skip = (page - 1) * pageSize;
+  async find(query, userId: string) {
     const rooms = await this.prisma.room.findMany({
-      skip,
-      take: pageSize,
       where: {
         OR: [
           {
@@ -56,13 +44,8 @@ export class RoomService {
         ],
       },
     });
-    const total = await this.prisma.room.count();
     return {
       data: rooms,
-      total,
-      page,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
     };
   }
   async findById(id: string) {

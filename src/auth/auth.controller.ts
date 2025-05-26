@@ -1,5 +1,6 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Req, Get, UseGuards } from '@nestjs/common';
 import { AuthService, LoginDto, RegisterDto } from './auth.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -66,9 +67,10 @@ export class AuthController {
     // Implement delete account logic here
     return { message: 'Delete account functionality not implemented yet' };
   }
-  @Post('get-user-info')
-  getUserInfo(@Body('userId') userId: string) {
-    // Implement get user info logic here
-    return { message: 'Get user info functionality not implemented yet' };
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  getUserInfo(@Req() req) {
+    const userId = req.user.userId;
+    return this.authService.getUserInfo(userId);
   }
 }

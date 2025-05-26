@@ -78,4 +78,19 @@ export class AuthService {
       token: token,
     };
   }
+
+  async getUserInfo(userId: string) {
+    if (!userId) {
+      throw new BadRequestException('User ID is required');
+    }
+    const user = await this.usersService.findOne(userId);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    return {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+    };
+  }
 }
