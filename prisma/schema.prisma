@@ -8,44 +8,43 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(uuid())
-  email     String     @unique
+  id        String   @id @default(uuid())
+  email     String   @unique
   name      String
   password  String
-  createdAt DateTime   @default(now())
-  messages  Message[]  @relation("UserMessages")
-  UserRoom  UserRoom[]
+  createdAt DateTime @default(now())
 }
 
 model Message {
-  id        String   @id @default(cuid())
+  id        String     @id @default(uuid())
   content   String
   senderId  String
-  sender    User     @relation("UserMessages", fields: [senderId], references: [id])
-  createdAt DateTime @default(now())
+  createdAt DateTime   @default(now())
+  roomId    String
+
+  UserRoom UserRoom[]
 }
 
 model Room {
-  id        String     @id @default(cuid())
-  name      String
-  avatar    String?
-  createdAt DateTime   @default(now())
-  UserRoom  UserRoom[]
-}
-
-model RoomMessage {
-  id      String @id @default(cuid())
-  content String
-  roomId  String
-  type    String
-
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  name        String
+  avatar      String?
+  description String?
+  ownerId     String
+  createdAt   DateTime @default(now())
+  userId      String?
+  userRooms   UserRoom[]
 }
 
 model UserRoom {
-  id     String @id @default(cuid())
-  userId String
-  roomId String
-  user   User   @relation(fields: [userId], references: [id])
-  room   Room   @relation(fields: [roomId], references: [id])
+  id            String    @id @default(uuid())
+  userId        String
+  roomId        String
+  lastmessageId String?
+  lastMessage   Message?  @relation(fields: [lastmessageId], references: [id])
+  lastReadAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  Room Room[]
 }

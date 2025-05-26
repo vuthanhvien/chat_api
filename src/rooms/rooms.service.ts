@@ -11,7 +11,7 @@ export interface CreateRoomDto {
 export class RoomService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateRoomDto) {
+  async create(dto: CreateRoomDto, userId: string) {
     if (!dto.name) {
       throw new BadRequestException('Tên phòng là bắt buộc');
     }
@@ -19,22 +19,42 @@ export class RoomService {
     const room = await this.prisma.room.create({
       data: {
         name: dto.name,
+        description: dto.description || '',
+        ownerId: userId,
       },
     });
+
     return room;
   }
 
-  async find({
-    page = 1,
-    pageSize = 10,
-  }: {
-    page?: number;
-    pageSize?: number;
-  }) {
+  async find(
+    {
+      page = 1,
+      pageSize = 10,
+    }: {
+      page?: number;
+      pageSize?: number;
+    },
+    userId: string,
+  ) {
     const skip = (page - 1) * pageSize;
     const rooms = await this.prisma.room.findMany({
       skip,
       take: pageSize,
+      where: {
+        OR: [
+          {
+            userRooms: {
+              some: {
+                userId: userId,
+              },
+            },
+          },
+          {
+            ownerId: userId,
+          },
+        ],
+      },
     });
     const total = await this.prisma.room.count();
     return {
@@ -68,5 +88,50 @@ export class RoomService {
         name: dto.name,
       },
     });
+  }
+
+  async addUsersToRoom(roomId: string, userIds: string[]) {
+    if (!roomId || !userIds || userIds.length === 0) {
+      throw new BadRequestException('Room ID and user IDs are required');
+    }
+
+    const room = await this.prisma.room.findUnique({
+      where: { id: roomId },
+    });
+    if (!room) {
+      throw new BadRequestException('Room not found');
+    }
+
+    const out = [];
+
+    // Check if the users already exist in the room
+    const existingUsers = await this.prisma.userRoom.findMany({
+      where: {
+        roomId: roomId,
+      },
+      select: {
+        userId: true,
+      },
+    });
+    const existingUserIds = existingUsers.map((userRoom) => userRoom.userId);
+    const newUserIds = userIds.filter(
+      (userId) => !existingUserIds.includes(userId),
+    );
+    console.log('New user IDs to add:', newUserIds, existingUsers);
+    if (newUserIds.length === 0) {
+      throw new BadRequestException('All users are already in the room');
+    }
+
+    newUserIds.forEach(async (userId) => {
+      const r = await this.prisma.userRoom.create({
+        data: {
+          userId: userId,
+          roomId: roomId,
+        },
+      });
+      out.push(r);
+    });
+
+    return out;
   }
 }
