@@ -35,6 +35,7 @@ model Room {
   createdAt   DateTime @default(now())
   userId      String?
 
+  type     String
   UserRoom UserRoom[]
 }
 

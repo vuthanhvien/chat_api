@@ -5,7 +5,9 @@ import { SocketService } from 'src/socket/socket.service';
 export interface CreateRoomDto {
   name: string;
   description?: string;
-  id: string; // Unique identifier for the room
+  id: string; //
+  userId?: string; // List of user IDs to add to the room
+  type?: string; // Type of room, e.g., 'private', 'group', etc.
 }
 
 @Injectable()
@@ -25,8 +27,23 @@ export class RoomService {
         name: dto.name,
         description: dto.description || '',
         ownerId: userId,
+        type: dto.userId ? 'user' : 'group',
       },
     });
+    await this.prisma.userRoom.create({
+      data: {
+        userId: userId,
+        roomId: room.id,
+      },
+    });
+    if (dto.userId) {
+      await this.prisma.userRoom.create({
+        data: {
+          userId: dto.userId,
+          roomId: room.id,
+        },
+      });
+    }
 
     // send a socket.io when create
 
@@ -87,8 +104,6 @@ export class RoomService {
         name: dto.name,
       },
     });
-
-    this.socketService.emitToUsers('room:update', r, [r.ownerId]);
     return r;
   }
 
@@ -134,12 +149,14 @@ export class RoomService {
       out.push(r);
     });
 
+    // this.socketService.joinRoom(newUserIds, roomId);
+
     // Emit an event to notify users about the new members
-    this.socketService.emitToUsers(
-      'room:user:add',
-      { roomId, userIds: newUserIds },
-      [room.ownerId],
-    );
+    // this.socketService.emitToUsers(
+    //   'room:user:add',
+    //   { roomId, userIds: newUserIds },
+    //   [room.ownerId],
+    // );
     return out;
   }
 }
