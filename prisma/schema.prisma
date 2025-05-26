@@ -8,13 +8,13 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
+  id        String     @id @default(uuid())
+  email     String     @unique
   name      String
   password  String
-  createdAt DateTime  @default(now())
-  messages  Message[] @relation("UserMessages")
-  UserRoom UserRoom[]
+  createdAt DateTime   @default(now())
+  messages  Message[]  @relation("UserMessages")
+  UserRoom  UserRoom[]
 }
 
 model Message {
@@ -26,16 +26,19 @@ model Message {
 }
 
 model Room {
-  id   String @id @default(cuid())
-  name String
-
-  UserRoom UserRoom[]
+  id        String     @id @default(cuid())
+  name      String
+  avatar    String?
+  createdAt DateTime   @default(now())
+  UserRoom  UserRoom[]
 }
 
 model RoomMessage {
-  id        String   @id @default(cuid())
-  content   String
-  roomId    String
+  id      String @id @default(cuid())
+  content String
+  roomId  String
+  type    String
+
   createdAt DateTime @default(now())
 }
 
