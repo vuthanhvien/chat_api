@@ -32,6 +32,19 @@ export class MessageService {
       },
     });
     this.socketService.emitToRoom('message:created', r, dto.roomId);
+
+    // update rooom last message
+    this.prisma.room
+      .update({
+        where: { id: dto.roomId },
+        data: {
+          lastMessageText: dto.content,
+          lastMessageAt: new Date(),
+        },
+      })
+      .then(() => {
+        this.socketService.emitToRoom('room:updated', {}, dto.roomId);
+      });
     return {
       data: r,
       message: 'Message created successfully',
