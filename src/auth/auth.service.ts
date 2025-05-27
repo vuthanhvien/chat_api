@@ -8,15 +8,31 @@ import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { SocketService } from 'src/socket/socket.service';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RegisterDto {
+  @ApiProperty({
+    description: 'User email address',
+  })
   email: string;
+  @ApiProperty({
+    description: 'User name',
+  })
   name: string;
+  @ApiProperty({
+    description: 'User password',
+  })
   password: string;
 }
 
 export class LoginDto {
+  @ApiProperty({
+    description: 'User email address',
+  })
   email: string;
+  @ApiProperty({
+    description: 'User password',
+  })
   password: string;
 }
 

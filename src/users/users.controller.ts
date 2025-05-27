@@ -1,11 +1,19 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { CreateUserDto, UsersService } from './users.service';
 
+import { ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+@UseGuards(AuthGuard('jwt'))
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('all')
+  @ApiOperation({
+    summary: 'Get all users',
+    description: 'Endpoint to retrieve all users in the system.',
+  })
   findAll() {
     return this.usersService.findAll();
   }

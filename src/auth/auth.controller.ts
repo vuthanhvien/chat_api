@@ -1,22 +1,36 @@
 import { Controller, Post, Body, Req, Get, UseGuards } from '@nestjs/common';
 import { AuthService, LoginDto, RegisterDto } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @ApiOperation({
+    summary: 'Register a new user',
+    description: 'Endpoint to register a new user with email and password.',
+  })
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }
 
   @Post('login')
+  @ApiOperation({
+    summary: 'User login',
+    description: 'Endpoint for user login with email and password.',
+  })
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }
 
   @Post('forgot-password')
+  @ApiOperation({
+    summary: 'Forgot password',
+    description: 'Endpoint to initiate the forgot password process.',
+  })
   forgotPassword(@Body('email') email: string) {
     // Implement forgot password logic here
     return { message: 'Forgot password functionality not implemented yet' };
