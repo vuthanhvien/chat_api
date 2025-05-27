@@ -100,7 +100,6 @@ model UserRoom {
   isArchived    Boolean   @default(false)
   isPinned      Boolean   @default(false)
   countUnread   Int       @default(0)
-  isTyping      Boolean   @default(false)
 
   @@unique([userId, roomId], name: "userId_roomId_unique")
 }

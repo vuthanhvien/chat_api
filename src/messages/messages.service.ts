@@ -45,6 +45,37 @@ export class MessageService {
       .then(() => {
         this.socketService.emitToRoom('room:updated', {}, dto.roomId);
       });
+
+    await this.prisma.userRoom
+      .findMany({
+        where: {
+          roomId: dto.roomId,
+        },
+      })
+      .then((userRooms) => {
+        userRooms.forEach((userRoom) => {
+          if (userRoom.userId !== senderId) {
+            this.prisma.userRoom.update({
+              where: {
+                userId_roomId_unique: {
+                  userId: senderId,
+                  roomId: dto.roomId,
+                },
+              },
+              data: {
+                countUnread: {
+                  increment: 1, // Increment unread messages count
+                },
+                lastmessageId: r.id, // Update last message ID
+                lastReadAt: new Date(), // Update last read time
+              },
+            });
+          }
+        });
+      });
+
+    // find content in dto.content
+
     return {
       data: r,
       message: 'Message created successfully',
