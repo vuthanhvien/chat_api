@@ -8,7 +8,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { CreateMessageDto, MessageService } from './messages.service';
+import {
+  CreateMessageDto,
+  MessageService,
+  ReadMessageDto,
+} from './messages.service';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('messages')
@@ -16,8 +20,7 @@ export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
   @Get()
-  async list(@Query() query, @Req() req) {
-    const userId = req.user.userId;
+  async list(@Query() query) {
     return this.messageService.find(query.roomId);
   }
 
@@ -25,6 +28,11 @@ export class MessageController {
   async create(@Body() createMessageDto: CreateMessageDto, @Req() req) {
     const userId = req.user.userId;
     return this.messageService.create(createMessageDto, userId);
+  }
+  @Post()
+  async read(@Body() dto: ReadMessageDto, @Req() req) {
+    const userId = req.user.userId;
+    return this.messageService.readMessage(dto, userId);
   }
 
   // @Get(':id')

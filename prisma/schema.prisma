@@ -7,13 +7,36 @@ datasource db {
   url      = "postgresql://vienvu:12345678@localhost:5432/chat"
 }
 
+model File {
+  id         String   @id @default(uuid())
+  filename   String
+  path       String
+  mimetype   String
+  size       Int
+  uploadedAt DateTime @default(now())
+  roomId     String?
+  userId     String?
+}
+
+model Notification {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  content   String
+  type      String
+  createdAt DateTime  @default(now())
+  readAt    DateTime?
+}
+
 model User {
-  id        String     @id @default(uuid())
-  email     String     @unique
-  name      String
-  password  String
-  createdAt DateTime   @default(now())
-  UserRoom  UserRoom[]
+  id            String         @id @default(uuid())
+  email         String         @unique
+  name          String
+  password      String
+  createdAt     DateTime       @default(now())
+  UserRoom      UserRoom[]
+  publicKey     String?
+  notifications Notification[]
 }
 
 model Message {
@@ -35,6 +58,9 @@ model Room {
   createdAt   DateTime @default(now())
   userId      String?
 
+  lastMessageText String?
+  lastMessageAt   DateTime?
+
   type     String
   UserRoom UserRoom[]
 }
@@ -50,4 +76,12 @@ model UserRoom {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   Room          Room      @relation(fields: [roomId], references: [id])
+  isMuted       Boolean   @default(false)
+  isBlocked     Boolean   @default(false)
+  isArchived    Boolean   @default(false)
+  isPinned      Boolean   @default(false)
+  countUnread   Int       @default(0)
+  isTyping      Boolean   @default(false)
+
+  @@unique([userId, roomId], name: "userId_roomId_unique")
 }
