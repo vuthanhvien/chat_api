@@ -19,6 +19,11 @@ export class SocketService {
       this.io.to(userId).emit(event, data);
     });
   }
+  emitToAll(event: string, data: any) {
+    if (!this.io) return;
+    console.log(`Emitting event ${event}`, data);
+    this.io.emit(event, data);
+  }
 
   emitToRoom(event: string, data: any, roomId: string) {
     console.log(this.io);

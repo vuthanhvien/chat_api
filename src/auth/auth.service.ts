@@ -7,6 +7,7 @@ import {
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import { SocketService } from 'src/socket/socket.service';
 
 export class RegisterDto {
   email: string;
@@ -21,7 +22,10 @@ export class LoginDto {
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private readonly socketService: SocketService,
+  ) {}
 
   async register(dto: RegisterDto) {
     if (!dto.email || !dto.name || !dto.password) {
@@ -49,6 +53,11 @@ export class AuthService {
         expiresIn: '100y',
       },
     );
+    this.socketService.emitToAll('user:registered', {
+      userId: newUser.id,
+      email: newUser.email,
+      name: newUser.name,
+    });
     return {
       userId: newUser.id,
       email: newUser.email,
