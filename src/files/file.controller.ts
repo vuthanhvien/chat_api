@@ -1,10 +1,30 @@
-import { Controller, Post, UploadedFile } from '@nestjs/common';
-import { File as MulterFile } from 'multer';
+import {
+  Controller,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('files')
 export class FileController {
   @Post('store')
-  async storeFile(@UploadedFile() file: MulterFile) {
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads', // Thư mục lưu file
+        filename: (req, file, cb) => {
+          // Đặt tên file lưu trữ
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, uniqueSuffix + extname(file.originalname));
+        },
+      }),
+    }),
+  )
+  async storeFile(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
       return {
         message: 'No file uploaded',
@@ -12,11 +32,13 @@ export class FileController {
         code: 400,
       };
     }
+
     return {
       originalname: file.originalname,
       filename: file.filename,
       size: file.size,
       mimetype: file.mimetype,
+      path: file.path,
     };
   }
 }

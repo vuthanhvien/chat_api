@@ -7,11 +7,12 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/jwt.strategy';
+import { SocketModule } from 'src/socket/socket.module';
 
 @Module({
   imports: [
     UsersModule,
-
+    SocketModule,
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'your_jwt_secret',

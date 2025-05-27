@@ -1,42 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
+export class CreateFileDto {
+  name: string;
+  size: number;
+  type: string;
+  userId: string;
+  roomId?: string; // Optional, assuming roomId is same as userId
+}
+
 @Injectable()
 export class FileService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async saveFile(meta: {
-    filename: string;
-    path: string;
-    mimetype: string;
-    size: number;
-    uploaderId: string;
-  }) {
-    const file = await this.prisma.file.create({
+  async create(fileData: CreateFileDto) {
+    return this.prisma.file.create({
       data: {
-        ...meta,
+        filename: fileData.name,
+        size: fileData.size,
+        userId: fileData.userId,
+        roomId: fileData.roomId,
+        path: `/uploads/${fileData.name}`,
+        mimetype: fileData.type,
       },
-    });
-    await this.prisma.fileHistory.create({
-      data: {
-        fileId: file.id,
-        action: 'upload',
-        userId: meta.uploaderId,
-      },
-    });
-    return file;
-  }
-
-  async recordHistory(fileId: string, action: string, userId: string) {
-    return this.prisma.fileHistory.create({
-      data: { fileId, action, userId },
-    });
-  }
-
-  async getFileHistory(fileId: string) {
-    return this.prisma.fileHistory.findMany({
-      where: { fileId },
-      orderBy: { createdAt: 'desc' },
     });
   }
 }
