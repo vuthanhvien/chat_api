@@ -9,4 +9,4 @@ import { SocketModule } from 'src/socket/socket.module';
   providers: [FileService, PrismaService],
   controllers: [FileController],
 })
-export class MessageModule {}
+export class FileModule {}

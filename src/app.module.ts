@@ -8,6 +8,7 @@ import { RoomModule } from './rooms/rooms.module';
 import { MessageModule } from './messages/messages.module';
 import { AppGateway } from './app.gateway';
 import { SocketModule } from './socket/socket.module';
+import { FileModule } from './files/file.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { SocketModule } from './socket/socket.module';
     RoomModule,
     MessageModule,
     SocketModule,
+    FileModule, // Assuming you have a FileModule for file handling
   ],
   controllers: [AppController],
   providers: [AppService, AppGateway],
