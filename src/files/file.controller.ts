@@ -5,7 +5,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiOperation, ApiProperty } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiProperty,
+} from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
@@ -49,6 +54,8 @@ export class FileController {
         code: 400,
       };
     }
+
+    // this.fileService.
 
     return {
       originalname: file.originalname,
