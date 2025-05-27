@@ -61,9 +61,28 @@ model Room {
   lastMessageText String?
   lastMessageAt   DateTime?
 
-  type     String
-  UserRoom UserRoom[]
+  type      String
+  UserRoom  UserRoom[]
+  RoomLink  RoomLink[]
+  RoomImage RoomImage[]
 }
+
+model RoomLink {
+  id        String   @id @default(uuid())
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id])
+  link      String
+  createdAt DateTime @default(now())
+}
+
+model RoomImage {
+  id        String   @id @default(uuid())
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id])
+  imageUrl  String
+  createdAt DateTime @default(now())
+}
+
 
 model UserRoom {
   id            String    @id @default(uuid())
